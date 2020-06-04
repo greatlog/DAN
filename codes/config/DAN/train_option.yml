@@ -1,0 +1,76 @@
+#### general settings
+name: DANx4
+use_tb_logger: true
+model: blind
+distortion: sr
+scale: 4
+gpu_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+kernel_size: 21
+code_length: 10
+sig_min: 0.2
+sig_max: 4.0
+sig: 2.6
+
+#### datasets
+datasets:
+  train:
+    name: DIV2K
+    mode: LQGTker
+    dataroot_GT: /data/DIV2K_Flickr2K/x4HR.lmdb
+    dataroot_LQ: /data/DIV2K_Flickr2K/x4LR.lmdb
+    #dataroot_GT: /data/DIV2K/DIV2K_train_HR_x4.lmdb
+    #dataroot_LQ: /data/DIV2K/DIV2K_train_LR_x4.lmdb
+
+    use_shuffle: true
+    n_workers: 8  # per GPU
+    batch_size: 64
+    GT_size: 256
+    LR_size: 64
+    use_flip: true
+    use_rot: true
+    color: RGB
+  val:
+    name: Set5
+    mode: LQGTker
+    dataroot_GT: /data/Set5/x4HRblur.lmdb
+    dataroot_LQ: /data/Set5/x4LRblur.lmdb
+
+#### network structures
+network_G:
+  which_model_G: DAN
+  in_nc: 3
+  out_nc: 3
+  nf: 64
+  nb: 40
+  loop: 4
+  upscale: 4
+  code_length: 10
+
+#### path
+path:
+  pretrain_model_G: best_pth/125000_G.pth
+  strict_load: true
+  resume_state: ~
+
+#### training settings: learning rate scheme, loss
+train:
+  lr_G: !!float 1e-4
+  lr_scheme: MultiStepLR
+  beta1: 0.9
+  beta2: 0.99
+  niter: 400000
+  warmup_iter: -1  # no warm up
+  lr_steps: [200000]
+  lr_gamma: 0.5
+  eta_min: !!float 1e-7
+
+  pixel_criterion: l1
+  pixel_weight: 1.0
+
+  manual_seed: 0
+  val_freq: !!float 2.5e3
+
+#### logger
+logger:
+  print_freq: 20
+  save_checkpoint_freq: !!float 2.5e3
