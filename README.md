@@ -2,7 +2,7 @@ This is an offical implementation of [Unfolding the Alternating Optimization for
 
 This repo is build on the basis of mmsr [[MMSR]](https://github.com/open-mmlab/mmsr) and [[IKC]](https://github.com/yuanjunchai/IKC)
 
-# Dependenices
+## Dependenices
 
 * python3
 * pytorch > 1.0
