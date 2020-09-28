@@ -9,6 +9,10 @@ This repo is build on the basis of mmsr [[MMSR]](https://github.com/open-mmlab/m
 * NVIDIA GPU + CUDA
 * Python packages: pip3 install numpy opencv-python lmdb pyyaml
 
+## Pretrained Models and Visual Results
+
+The pretrained models and visual results on DIV2KRK are available at [BaiduYun](https://pan.baidu.com/s/1KOnoIplZmF9XheARW_tM-w)(Password: u9ah).
+
 
 ## Dataset Preparation
 We use [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/) and [Flickr2K](http://cv.snu.ac.kr/research/EDSR/Flickr2K.tar) as our training datasets. 
