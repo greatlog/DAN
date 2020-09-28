@@ -47,13 +47,15 @@ class DistIterSampler(Sampler):
         # deterministically shuffle based on epoch
         g = torch.Generator()
         g.manual_seed(self.epoch)
-        indices = torch.randperm(self.total_size, generator=g).tolist() #Returns a random permutation of integers from 0 to n - 1
+        indices = torch.randperm(
+            self.total_size, generator=g
+        ).tolist()  # Returns a random permutation of integers from 0 to n - 1
 
         dsize = len(self.dataset)
         indices = [v % dsize for v in indices]
 
         # subsample
-        indices = indices[self.rank:self.total_size:self.num_replicas]
+        indices = indices[self.rank : self.total_size : self.num_replicas]
         assert len(indices) == self.num_samples
 
         return iter(indices)

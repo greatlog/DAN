@@ -5,7 +5,7 @@ import models.modules.module_util as mutil
 
 
 class MSRResNet(nn.Module):
-    ''' modified SRResNet'''
+    """ modified SRResNet"""
 
     def __init__(self, in_nc=3, out_nc=3, nf=64, nb=16, upscale=4):
         super(MSRResNet, self).__init__()
@@ -34,7 +34,9 @@ class MSRResNet(nn.Module):
         self.lrelu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
 
         # initialization
-        mutil.initialize_weights([self.conv_first, self.upconv1, self.HRconv, self.conv_last], 0.1)
+        mutil.initialize_weights(
+            [self.conv_first, self.upconv1, self.HRconv, self.conv_last], 0.1
+        )
         if self.upscale == 4:
             mutil.initialize_weights(self.upconv2, 0.1)
 
@@ -49,6 +51,8 @@ class MSRResNet(nn.Module):
             out = self.lrelu(self.pixel_shuffle(self.upconv1(out)))
 
         out = self.conv_last(self.lrelu(self.HRconv(out)))
-        base = F.interpolate(x, scale_factor=self.upscale, mode='bilinear', align_corners=False)
+        base = F.interpolate(
+            x, scale_factor=self.upscale, mode="bilinear", align_corners=False
+        )
         out += base
         return out
