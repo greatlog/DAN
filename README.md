@@ -5,7 +5,7 @@ This repo is build on the basis of mmsr [[MMSR]](https://github.com/open-mmlab/m
 ## Dependenices
 
 * python3
-* pytorch > 1.5
+* pytorch >= 1.5
 * NVIDIA GPU + CUDA
 * Python packages: pip3 install numpy opencv-python lmdb pyyaml
 
