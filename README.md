@@ -1,6 +1,6 @@
 This is an official implementation of [Unfolding the Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2010.02631)
 
-This repo is build on the basis of mmsr [[MMSR]](https://github.com/open-mmlab/mmsr) and [[IKC]](https://github.com/yuanjunchai/IKC)
+This repo is build on the basis of [[MMSR]](https://github.com/open-mmlab/mmsr) and [[IKC]](https://github.com/yuanjunchai/IKC)
 
 ## Dependenices
 
@@ -28,7 +28,7 @@ After download, run [`codes/scripts/generate_mod_blur_LR_bic.py`](codes/scripts/
 python3 codes/scripts/generate_mod_blur_LR_bic.py
 ```
 
-For efficient IO, run  run [`codes/scripts/create_lmdb.py`](codes/scripts/create_lmdb.py) to transform datasets to binary files. (You need to modify the file paths by yourself.)
+For efficient IO, run [`codes/scripts/create_lmdb.py`](codes/scripts/create_lmdb.py) to transform datasets to binary files. (You need to modify the file paths by yourself.)
 
 ```bash
 python3 codes/scripts/create_lmdb.py
