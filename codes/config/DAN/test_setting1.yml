@@ -44,13 +44,13 @@ datasets:
 #### network structures
 network_G:
   which_model_G: DAN
-  in_nc: 3
-  out_nc: 3
-  nf: 64
-  nb: 40
-  loop: 4
-  upscale: 4
-  code_length: 10
+  setting:
+    nf: 64
+    nb: 40
+    loop: 4
+    upscale: 4
+    kernel_size: 21
+    pca_matrix_path: ../../../pca_matrix.pth # ../../../pca_aniso_matrix_x2.pth when scale=2
 
 #### path
 path:

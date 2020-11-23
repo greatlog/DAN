@@ -12,7 +12,7 @@ import argparse
 from collections import OrderedDict
 import numpy as np
 import torch
-import options.options as option
+import options as option
 from models import create_model
 
 
@@ -24,7 +24,7 @@ from data import create_dataset, create_dataloader
 #### options
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "-opt", type=str, default="test_option.yml", help="Path to options YMAL file."
+    "-opt", type=str, default="test_setting2.yml", help="Path to options YMAL file."
 )
 parser.add_argument("-input_dir", type=str, default="../../../data_samples/")
 parser.add_argument("-output_dir", type=str, default="../../../data_samples/")
