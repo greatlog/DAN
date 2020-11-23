@@ -144,7 +144,7 @@ def main():
                     )
                 )
                 from tensorboardX import SummaryWriter
-            tb_logger = SummaryWriter(log_dir="log/tb_logger/" + opt["name"])
+            tb_logger = SummaryWriter(log_dir="log/{}/tb_logger/".format(opt["name"]))
     else:
         util.setup_logger(
             "base", opt["path"]["log"], "train", level=logging.INFO, screen=True
@@ -230,6 +230,7 @@ def main():
         scaling=3,
         rate_cln=0.2,
         noise_high=0.0,
+        random_disturb=opt["random_disturb"]
     )
     #### training
     logger.info(
@@ -240,12 +241,13 @@ def main():
             train_sampler.set_epoch(epoch)
         for _, train_data in enumerate(train_loader):
             current_step += 1
+
             if current_step > total_iters:
                 break
-            #### preprocessing for LR_img and kernel map
+
             LR_img, ker_map = prepro(train_data["GT"])
             LR_img = (LR_img * 255).round() / 255
-            #### training Predictor
+
             model.feed_data(LR_img, train_data["GT"], ker_map)
             model.optimize_parameters(current_step)
             model.update_learning_rate(
@@ -253,10 +255,9 @@ def main():
             )
             visuals = model.get_current_visuals()
 
-            #### log of model_P
             if current_step % opt["logger"]["print_freq"] == 0:
                 logs = model.get_current_log()
-                message = "Predictor <epoch:{:3d}, iter:{:8,d}, lr:{:.3e}> ".format(
+                message = "<epoch:{:3d}, iter:{:8,d}, lr:{:.3e}> ".format(
                     epoch, current_step, model.get_current_learning_rate()
                 )
                 for k, v in logs.items():
@@ -265,7 +266,7 @@ def main():
                     if opt["use_tb_logger"] and "debug" not in opt["name"]:
                         if rank <= 0:
                             tb_logger.add_scalar(k, v, current_step)
-                if rank <= 0:
+                if rank == 0:
                     logger.info(message)
 
             # validation, to produce ker_map_list(fake)

@@ -53,7 +53,7 @@ def parse(opt_path, is_train=True):
         osp.join(__file__, osp.pardir, osp.pardir, osp.pardir, osp.pardir)
     )
     path = osp.abspath(__file__)
-    config_dir = path.split("/")[-3]
+    config_dir = path.split("/")[-2]
     if is_train:
         experiments_root = osp.join(
             opt["path"]["root"], "experiments", config_dir, opt["name"]

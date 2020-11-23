@@ -38,16 +38,14 @@ def create_dataset(dataset_opt):
         from data.LQ_dataset import LQDataset as D
 
         dataset = D(dataset_opt)
-    elif mode == "LQGTker":  # SFTMD
-        from data.LQGTker_dataset import LQGTKerDataset as D
-
-        dataset = D(dataset_opt)
-    elif mode == "LQGT":
+    elif mode == "LQGT":  # SFTMD
         from data.LQGT_dataset import LQGTDataset as D
 
         dataset = D(dataset_opt)
-    elif mode == "SRker":  # Corrector
-        from data.SRker_dataset import SRkerDataset as D
+
+        dataset = D(dataset_opt)
+    elif mode == "GT":  # Corrector
+        from data.GT_dataset import GTDataset as D
 
         dataset = D(dataset_opt)
     # elif mode == 'LQGTseg_bg':

@@ -1,7 +1,5 @@
 import functools
-import torch.nn as nn
-import torch.nn.functional as F
-import models.modules.module_util as mutil
+from .module_util import *
 
 
 class MSRResNet(nn.Module):
@@ -12,8 +10,8 @@ class MSRResNet(nn.Module):
         self.upscale = upscale
 
         self.conv_first = nn.Conv2d(in_nc, nf, 3, 1, 1, bias=True)
-        basic_block = functools.partial(mutil.ResidualBlock_noBN, nf=nf)
-        self.recon_trunk = mutil.make_layer(basic_block, nb)
+        basic_block = functools.partial(ResidualBlock_noBN, nf=nf)
+        self.recon_trunk = make_layer(basic_block, nb)
 
         # upsampling
         if self.upscale == 2:
@@ -34,11 +32,11 @@ class MSRResNet(nn.Module):
         self.lrelu = nn.LeakyReLU(negative_slope=0.1, inplace=True)
 
         # initialization
-        mutil.initialize_weights(
+        initialize_weights(
             [self.conv_first, self.upconv1, self.HRconv, self.conv_last], 0.1
         )
         if self.upscale == 4:
-            mutil.initialize_weights(self.upconv2, 0.1)
+            initialize_weights(self.upconv2, 0.1)
 
     def forward(self, x):
         fea = self.lrelu(self.conv_first(x))

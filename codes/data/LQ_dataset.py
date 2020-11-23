@@ -10,7 +10,7 @@ class LQDataset(data.Dataset):
     """Read LR images to Predictor."""
 
     def __init__(self, opt):
-        super(LQDataset, self).__init__()
+        super().__init__()
         self.opt = opt
         self.opt_P = opt
         self.LR_paths = None

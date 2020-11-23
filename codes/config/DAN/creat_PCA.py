@@ -32,7 +32,7 @@ opt = option.dict_to_nonedict(opt)
 
 
 batch_ker = util.random_batch_kernel(
-    batch=30000, l=11, sig_min=0.6, sig_max=5, rate_iso=0, scaling=3, tensor=False
+    batch=30000, l=21, sig_min=0.6, sig_max=5, rate_iso=0, scaling=3, tensor=False, random_disturb=True
 )
 print("batch kernel shape: {}".format(batch_ker.shape))
 b = np.size(batch_ker, 0)

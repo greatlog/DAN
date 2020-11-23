@@ -1,8 +1,5 @@
 import functools
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import models.modules.module_util as mutil
+from .module_util import *
 
 
 class ResidualDenseBlock_5C(nn.Module):
@@ -17,7 +14,7 @@ class ResidualDenseBlock_5C(nn.Module):
         self.lrelu = nn.LeakyReLU(negative_slope=0.2, inplace=True)
 
         # initialization
-        mutil.initialize_weights(
+        initialize_weights(
             [self.conv1, self.conv2, self.conv3, self.conv4, self.conv5], 0.1
         )
 
@@ -47,12 +44,12 @@ class RRDB(nn.Module):
 
 
 class RRDBNet(nn.Module):
-    def __init__(self, in_nc, out_nc, nf, nb, gc=32):
+    def __init__(self, in_nc, out_nc, nf, nb, gc=32, upscale=4):
         super(RRDBNet, self).__init__()
         RRDB_block_f = functools.partial(RRDB, nf=nf, gc=gc)
 
         self.conv_first = nn.Conv2d(in_nc, nf, 3, 1, 1, bias=True)
-        self.RRDB_trunk = mutil.make_layer(RRDB_block_f, nb)
+        self.RRDB_trunk = make_layer(RRDB_block_f, nb)
         self.trunk_conv = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)
         #### upsampling
         self.upconv1 = nn.Conv2d(nf, nf, 3, 1, 1, bias=True)

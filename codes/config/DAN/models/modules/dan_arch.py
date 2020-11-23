@@ -147,7 +147,7 @@ class DAN(nn.Module):
         self,
         nf=64,
         nb=16,
-        scale=4,
+        upscale=4,
         input_para=10,
         kernel_size=21,
         loop=8,
@@ -157,9 +157,9 @@ class DAN(nn.Module):
 
         self.ksize = kernel_size
         self.loop = loop
-        self.scale = scale
+        self.scale = upscale
 
-        self.Restorer = Restorer(nf=nf, nb=nb, scale=scale, input_para=input_para)
+        self.Restorer = Restorer(nf=nf, nb=nb, scale=self.scale, input_para=input_para)
         self.Estimator = Estimator(kernel_size=kernel_size, scale=self.scale)
 
         self.encoder = nn.Parameter(

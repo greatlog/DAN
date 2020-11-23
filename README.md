@@ -39,20 +39,20 @@ python3 codes/scripts/create_lmdb.py
 For single GPU:
 ```bash
 cd codes/config/DAN
-python3 train.py -opt=train_option.yml
+python3 train.py -opt=train_setting1.yml
 ```
 
 For distributed training
 ```bash
 cd codes/config/DAN
-bash run.sh
+bash run_scripts.sh
 ```
 
 
 ## Test on Synthetic Images
 ```bash
 cd codes/config/DAN
-python3 test.py -opt=test_option.yml
+python3 test.py -opt=test_setting1.yml
 ```
 
 ## Test on Real Images

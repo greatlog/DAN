@@ -187,7 +187,6 @@ def to_tensor(pic):
     else:
         return img
 
-
 ####################
 # blur kernel and PCA
 ####################
@@ -217,7 +216,7 @@ def PCA(data, k=2):
 
 
 def random_batch_kernel(
-    batch, l=21, sig_min=0.2, sig_max=4.0, rate_iso=1.0, scaling=3, tensor=True
+    batch, l=21, sig_min=0.2, sig_max=4.0, rate_iso=1.0, scaling=3, tensor=True, random_disturb=False
 ):
 
     if np.random.random() < rate_iso:
@@ -260,7 +259,8 @@ def random_batch_kernel(
             )
         )
         kernel = kernel.reshape(batch, l, l)
-        kernel = kernel + np.random.uniform(0, 0.25, (batch, l, l)) * kernel
+        if random_disturb:
+            kernel = kernel + np.random.uniform(0, 0.25, (batch, l, l)) * kernel
         kernel = kernel / np.sum(kernel, (1, 2), keepdims=True)
 
         return torch.FloatTensor(kernel) if tensor else kernel
@@ -319,7 +319,7 @@ def b_GaussianNoising(tensor, sigma, mean=0.0, noise_size=None, min=0.0, max=1.0
 
 class BatchSRKernel(object):
     def __init__(
-        self, l=21, sig=2.6, sig_min=0.2, sig_max=4.0, rate_iso=1.0, scaling=3
+        self, l=21, sig=2.6, sig_min=0.2, sig_max=4.0, rate_iso=1.0, scaling=3, random_disturb=False
     ):
         self.l = l
         self.sig = sig
@@ -327,6 +327,7 @@ class BatchSRKernel(object):
         self.sig_max = sig_max
         self.rate = rate_iso
         self.scaling = scaling
+        self.random_disturb=random_disturb
 
     def __call__(self, random, batch, tensor=False):
         if random == True:  # random kernel
@@ -338,6 +339,7 @@ class BatchSRKernel(object):
                 rate_iso=self.rate,
                 scaling=self.scaling,
                 tensor=tensor,
+                random_disturb=self.random_disturb
             )
         else:  # stable kernel
             return stable_batch_kernel(batch, l=self.l, sig=self.sig, tensor=tensor)
@@ -406,6 +408,7 @@ class SRMDPreprocessing(object):
         scaling=3,
         rate_cln=0.2,
         noise_high=0.08,
+        random_disturb=False,
     ):
         self.encoder = PCAEncoder(pca, cuda=cuda)
         self.kernel_gen = BatchSRKernel(
@@ -415,6 +418,7 @@ class SRMDPreprocessing(object):
             sig_max=sig_max,
             rate_iso=rate_iso,
             scaling=scaling,
+            random_disturb=random_disturb
         )
         self.blur = BatchBlur(l=kernel)
         self.para_in = para_input

@@ -5,20 +5,20 @@ model: blind
 distortion: sr
 scale: 4
 gpu_ids: [0, 1, 2, 3, 4, 5, 6, 7]
-kernel_size: 21 # 11 when scale=2
+kernel_size: 21
 code_length: 10
 sig_min: 0.2
 sig_max: 4.0
 sig: 2.6
-pca_matrix_path: ../../../pca_aniso_matrix.pth # ../../../pca_aniso_matrix.pth when scale=2
+random_disturb: false
 
+pca_matrix_path: ../../../pca_matrix.pth
 #### datasets
 datasets:
   train:
     name: DIV2K
-    mode: LQGTker
+    mode: GT
     dataroot_GT: /data/DIV2K_Flickr2K/x4HR.lmdb
-    dataroot_LQ: /data/DIV2K_Flickr2K/x4LR.lmdb
 
     use_shuffle: true
     n_workers: 8  # per GPU
@@ -30,20 +30,20 @@ datasets:
     color: RGB
   val:
     name: DIV2KRK
-    mode: LQGTker
-    dataroot_GT: /data/DIV2KRK_public/HRblur.lmdb
-    dataroot_LQ: /data/DIV2KRK_public/x4LRblur.lmdb
+    mode: LQGT
+    dataroot_GT: /data/Set5/x4HRblur.lmdb
+    dataroot_LQ: /data/Set5/x4LRblur.lmdb
 
 #### network structures
 network_G:
   which_model_G: DAN
-  in_nc: 3
-  out_nc: 3
-  nf: 64
-  nb: 40
-  loop: 4
-  upscale: 4
-  code_length: 10
+  setting:
+    nf: 64
+    nb: 40
+    loop: 4
+    upscale: 4
+    kernel_size: 21
+    pca_matrix_path: ../../../pca_matrix.pth
 
 #### path
 path:

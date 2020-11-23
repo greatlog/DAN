@@ -1,0 +1,57 @@
+name: DANx4
+suffix: ~  # add suffix to saved images
+model: blind
+distortion: sr
+scale: 4 # 2
+kernel_size: 21 # 11 when scale=2
+code_length: 10
+crop_border: ~  # crop border when evaluation. If None(~), crop the scale pixels
+gpu_ids: [0]
+pca_matrix_path: ../../../pca_aniso_matrix_x4.pth # ../../../pca_aniso_matrix_2.pth when scale=2
+
+datasets:
+  test0:
+    name: DIV2KRK
+    mode: LQGT
+    dataroot_GT: /data/DIV2KRK_public/HRblur.lmdb
+    dataroot_LQ: /data/DIV2KRK_public/x2LRblur.lmdb
+  # test1:
+  #   name: Set5
+  #   mode: LQGT
+  #   dataroot_GT: /data/Set5/x4HRblur.lmdb
+  #   dataroot_LQ: /data/Set5/x4LRblur.lmdb
+  # test2:
+  #   name: Set14
+  #   mode: LQGT
+  #   dataroot_GT: /data/Set14/x4HRblur.lmdb
+  #   dataroot_LQ: /data/Set14/x4LRblur.lmdb
+  # test3:
+  #   name: BSDS100
+  #   mode: LQGT
+  #   dataroot_GT: /data/BSDS100/x4HRblur.lmdb
+  #   dataroot_LQ: /data/BSDS100/x4LRblur.lmdb
+  # test4:
+  #   name: urban100
+  #   mode: LQGT
+  #   dataroot_GT: /data/urban100/x4HRblur.lmdb
+  #   dataroot_LQ: /data/urban100/x4LRblur.lmdb
+  # test5:
+  #   name: manga109
+  #   mode: LQGT
+  #   dataroot_GT: /data/manga109/x4HRblur.lmdb
+  #   dataroot_LQ: /data/manga109/x4LRblur.lmdb
+
+#### network structures
+network_G:
+  which_model_G: DAN
+  in_nc: 3
+  out_nc: 3
+  nf: 64
+  nb: 40
+  loop: 4
+  upscale: 4
+  code_length: 10
+
+#### path
+path:
+  pretrain_model_G: ../../../checkpoints/DANx4.pth
