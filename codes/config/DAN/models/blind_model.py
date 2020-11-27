@@ -5,11 +5,12 @@ import torch
 import torch.nn as nn
 import torch.nn.init as init
 from torch.nn.parallel import DataParallel, DistributedDataParallel
-import models.networks as networks
+
 import models.lr_scheduler as lr_scheduler
-from .base_model import BaseModel
+import models.networks as networks
 from models.modules.loss import CharbonnierLoss
 
+from .base_model import BaseModel
 
 logger = logging.getLogger("base")
 

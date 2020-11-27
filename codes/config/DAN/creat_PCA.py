@@ -1,36 +1,8 @@
-import argparse
-import logging
-import math
-import os
-import random
-import sys
-
 import numpy as np
 import torch
-import torch.distributed as dist
-import torch.multiprocessing as mp
-from IPython import embed
-
-import options.options as option
-from models import create_model
 
 sys.path.insert(0, "../../")
-from data import create_dataloader, create_dataset
-from data.data_sampler import DistIterSampler
-from utils import util
-
-parser = argparse.ArgumentParser()
-parser.add_argument("-opt", type=str, help="Path to option YMAL file of SFTMD_Net.")
-parser.add_argument(
-    "--launcher", choices=["none", "pytorch"], default="none", help="job launcher"
-)
-parser.add_argument("--local_rank", type=int, default=0)
-args = parser.parse_args()
-opt = option.parse(args.opt, is_train=True)
-
-# convert to NoneDict, which returns None for missing keys
-opt = option.dict_to_nonedict(opt)
-
+import utils as util
 
 batch_ker = util.random_batch_kernel(
     batch=30000,

@@ -15,9 +15,9 @@ import options as option
 from models import create_model
 
 sys.path.insert(0, "../../")
+import utils as util
 from data import create_dataloader, create_dataset
 from data.data_sampler import DistIterSampler
-import utils as util
 
 
 def init_dist(backend="nccl", **kwargs):
@@ -38,7 +38,7 @@ def init_dist(backend="nccl", **kwargs):
 def main():
     #### setup options of three networks
     parser = argparse.ArgumentParser()
-    parser.add_argument("-opt", type=str, help="Path to option YMAL file of Predictor.")
+    parser.add_argument("-opt", type=str, help="Path to option YMAL file.")
     parser.add_argument(
         "--launcher", choices=["none", "pytorch"], default="none", help="job launcher"
     )

@@ -1,5 +1,7 @@
-import torch
 import logging
+
+import torch
+
 from models import modules as M
 
 logger = logging.getLogger("base")
@@ -8,7 +10,7 @@ logger = logging.getLogger("base")
 def define_G(opt):
     opt_net = opt["network_G"]
     which_model = opt_net["which_model_G"]
-    setting = opt_net['setting']
+    setting = opt_net["setting"]
     netG = getattr(M, which_model)(**setting)
     return netG
 
@@ -16,9 +18,10 @@ def define_G(opt):
 # Discriminator
 def define_D(opt):
     opt_net = opt["network_D"]
-    setting = opt_net['setting']
+    setting = opt_net["setting"]
     netD = getattr(M, which_model)(**setting)
     return netD
+
 
 # Perceptual loss
 def define_F(opt, use_bn=False):

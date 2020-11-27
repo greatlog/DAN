@@ -1,6 +1,6 @@
 import math
-from collections import Counter
-from collections import defaultdict
+from collections import Counter, defaultdict
+
 import torch
 from torch.optim.lr_scheduler import _LRScheduler
 
@@ -175,8 +175,8 @@ if __name__ == "__main__":
         lr_l[i] = current_lr
 
     import matplotlib as mpl
-    from matplotlib import pyplot as plt
     import matplotlib.ticker as mtick
+    from matplotlib import pyplot as plt
 
     mpl.style.use("default")
     import seaborn
