@@ -9,6 +9,9 @@ checkpoints/
 data_samples/
 !data_samples
 
+codes/config/
+!codes/cofig/DAN
+
 results/
 !results
 
