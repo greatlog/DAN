@@ -15,6 +15,9 @@ codes/config/
 results/
 !results
 
+codes/scripts/make_blur_kernel.m
+codes/scripts/make_kernels.m
+
 .pth
 .png
 .log

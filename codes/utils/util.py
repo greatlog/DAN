@@ -17,7 +17,7 @@ import torch.nn.functional as F
 from PIL import Image
 from data.util import imresize, imresize_cuda, imresize_cuda_batch
 import collections
-from IPython import embed
+from scipy.io import loadmat
 
 try:
     import accimage
@@ -34,7 +34,6 @@ except ImportError:
 
 
 def OrderedYaml():
-    """yaml orderedDict support"""
     _mapping_tag = yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG
 
     def dict_representer(dumper, data):
@@ -47,13 +46,11 @@ def OrderedYaml():
     Loader.add_constructor(_mapping_tag, dict_constructor)
     return Loader, Dumper
 
-
 def _is_pil_image(img):
     if accimage is not None:
         return isinstance(img, (Image.Image, accimage.Image))
     else:
         return isinstance(img, Image.Image)
-
 
 def _is_tensor_image(img):
     return torch.is_tensor(img) and img.ndimension() == 3
@@ -64,19 +61,7 @@ def _is_numpy_image(img):
 
 
 def to_pil_image(pic, mode=None):
-    """Convert a tensor or an ndarray to PIL Image.
-
-    See :class:`~torchvision.transforms.ToPIlImage` for more details.
-
-    Args:
-        pic (Tensor or numpy.ndarray): Image to be converted to PIL Image.
-        mode (`PIL.Image mode`_): color space and pixel depth of input data (optional).
-
-    .. _PIL.Image mode: http://pillow.readthedocs.io/en/3.4.x/handbook/concepts.html#modes
-
-    Returns:
-        PIL Image: Image converted to PIL Image.
-    """
+  
     if not (_is_numpy_image(pic) or _is_tensor_image(pic)):
         raise TypeError("pic should be Tensor or ndarray. Got {}.".format(type(pic)))
 
@@ -140,16 +125,6 @@ def to_pil_image(pic, mode=None):
 
 
 def to_tensor(pic):
-    """Convert a ``PIL Image`` or ``numpy.ndarray`` to tensor.
-
-    See ``ToTensor`` for more details.
-
-    Args:
-        pic (PIL Image or numpy.ndarray): Image to be converted to tensor.
-
-    Returns:
-        Tensor: Converted image.
-    """
     if not (_is_pil_image(pic) or _is_numpy_image(pic)):
         raise TypeError("pic should be PIL Image or ndarray. Got {}".format(type(pic)))
 
@@ -187,17 +162,11 @@ def to_tensor(pic):
     else:
         return img
 
-####################
-# blur kernel and PCA
-####################
-
-
 def isogkern(kernlen, std):
     gkern1d = signal.gaussian(kernlen, std=std).reshape(kernlen, 1)
     gkern2d = np.outer(gkern1d, gkern1d)
     gkern2d = gkern2d / np.sum(gkern2d)
     return gkern2d
-
 
 def anisogkern(kernlen, std1, std2, angle):
     gkern1d_1 = signal.gaussian(kernlen, std=std1).reshape(kernlen, 1)
@@ -206,14 +175,12 @@ def anisogkern(kernlen, std1, std2, angle):
     gkern2d = gkern2d / np.sum(gkern2d)
     return gkern2d
 
-
 def PCA(data, k=2):
     X = torch.from_numpy(data)
     X_mean = torch.mean(X, 0)
     X = X - X_mean.expand_as(X)
     U, S, V = torch.svd(torch.t(X))
     return U[:, :k]  # PCA matrix
-
 
 def random_batch_kernel(
     batch, l=21, sig_min=0.2, sig_max=4.0, rate_iso=1.0, scaling=3, tensor=True, random_disturb=False
@@ -234,7 +201,6 @@ def random_batch_kernel(
 
         sigma_x = np.random.uniform(sig_min, sig_max, (batch, 1, 1))
         sigma_y = np.random.uniform(sig_min, sig_max, (batch, 1, 1))
-        # sigma_y = np.clip(sigma_y, sig_min, sig_max)
 
         D = np.zeros((batch, 2, 2))
         D[:, 0, 0] = sigma_x.squeeze() ** 2
@@ -277,25 +243,13 @@ def stable_batch_kernel(batch, l=21, sig=2.6, tensor=True):
     return torch.FloatTensor(kernel) if tensor else kernel
 
 
-def b_GPUVar_Bicubic(variable, scale):
+def b_Bicubic(variable, scale):
     B, C, H, W = variable.size()
     H_new = int(H / scale)
     W_new = int(W / scale)
     tensor_v = variable.view((B, C, H, W))
-    re_tensor = imresize_cuda_batch(tensor_v, 1 / scale)
+    re_tensor = imresize(tensor_v, 1 / scale)
     return re_tensor
-
-
-def b_CPUVar_Bicubic(variable, scale):
-    B, C, H, W = variable.size()
-    H_new = int(H / scale)
-    W_new = int(W / scale)
-    tensor_v = variable.view((B, C, H, W))
-    re_tensor = torch.zeros((B, C, H_new, W_new))
-    for i in range(B):
-        re_tensor[i] = imresize(tensor_v[i], 1 / scale)
-    return re_tensor
-
 
 def random_batch_noise(batch, high, rate_cln=1.0):
     noise_level = np.random.uniform(size=(batch, 1)) * high
@@ -344,16 +298,23 @@ class BatchSRKernel(object):
         else:  # stable kernel
             return stable_batch_kernel(batch, l=self.l, sig=self.sig, tensor=tensor)
 
+class BatchBlurKernel(object):
+    def __init__(self, kernels_path):
+        kernels = loadmat(kernels_path)['kernels']
+        self.num_kernels = kernels.shape[0]
+        self.kernels = kernels
+
+    def __call__(self, random, batch, tensor=False):
+        index = np.random.randint(0, self.num_kernels, batch)
+        kernels = self.kernels[index]
+        return torch.FloatTensor(kernels) if tensor else kernels
+        
 
 class PCAEncoder(object):
-    def __init__(self, weight, cuda=False):
-        self.weight = weight  # [l^2, k]
+    def __init__(self, weight):
+        self.register_buffer('weight', weight)
         self.size = self.weight.size()
-        if cuda:
-            self.weight = Variable(self.weight).cuda()
-        else:
-            self.weight = Variable(self.weight)
-
+       
     def __call__(self, batch_kernel):
         B, H, W = batch_kernel.size()  # [B, l, l]
         return torch.bmm(
@@ -361,9 +322,8 @@ class PCAEncoder(object):
         ).view((B, -1))
 
 
-class BatchBlur(nn.Module):
+class BatchBlur(object):
     def __init__(self, l=15):
-        super(BatchBlur, self).__init__()
         self.l = l
         if l % 2 == 1:
             self.pad = nn.ReflectionPad2d(l // 2)
@@ -371,7 +331,7 @@ class BatchBlur(nn.Module):
             self.pad = nn.ReflectionPad2d((l // 2, l // 2 - 1, l // 2, l // 2 - 1))
         # self.pad = nn.ZeroPad2d(l // 2)
 
-    def forward(self, input, kernel):
+    def __call_(self, input, kernel):
         B, C, H, W = input.size()
         pad = self.pad(input)
         H_p, W_p = pad.size()[-2:]
@@ -410,7 +370,7 @@ class SRMDPreprocessing(object):
         noise_high=0.08,
         random_disturb=False,
     ):
-        self.encoder = PCAEncoder(pca, cuda=cuda)
+        self.encoder = PCAEncoder(pca).cuda() if cuda else PCAEncoder(pca)
         self.kernel_gen = BatchSRKernel(
             l=kernel,
             sig=sig,
@@ -431,27 +391,20 @@ class SRMDPreprocessing(object):
         self.random = random
 
     def __call__(self, hr_tensor, kernel=False):
-        ### hr_tensor is tensor, not cuda tensor
-        B, C, H, W = hr_tensor.size()
-        b_kernels = (
-            Variable(self.kernel_gen(self.random, B, tensor=True)).cuda()
-            if self.cuda
-            else Variable(self.kernel_gen(self.random, B, tensor=True))
-        )
-        # blur
-        if self.cuda:
-            hr_blured_var = self.blur(Variable(hr_tensor).cuda(), b_kernels)
-        else:
-            hr_blured_var = self.blur(Variable(hr_tensor), b_kernels)
-        # kernel encode
-        kernel_code = self.encoder(b_kernels)  # B x self.para_input
-        # Down sample
+        # hr_tensor is tensor, not cuda tensor
 
-        # lr_blured_t = F.interpolate(hr_blured_var, scale_factor = 1/self.scale, mode='bicubic', align_corners=True)
-        if self.cuda:
-            lr_blured_t = b_GPUVar_Bicubic(hr_blured_var, self.scale)
-        else:
-            lr_blured_t = b_CPUVar_Bicubic(hr_blured_var, self.scale)
+        hr_var = Variable(hr_tensor).cuda() if self.cuda else Variable(hr_tensor)
+        device = hr_var.device
+        B, C, H, W = hr_var.size()
+
+        b_kernels = Variable(self.kernel_gen(self.random, B, tensor=True)).to(device)
+        hr_blured_var = self.blur(hr_var, b_kernels)
+        
+        # B x self.para_input
+        kernel_code = self.encoder(b_kernels)
+
+        # Down sample
+        lr_blured_t = b_Bicubic(hr_blured_var, self.scale)
 
         # Noisy
         if self.noise:
@@ -463,22 +416,14 @@ class SRMDPreprocessing(object):
             Noise_level = torch.zeros((B, 1))
             lr_noised_t = lr_blured_t
 
-        if self.cuda:
-            Noise_level = Variable(Noise_level).cuda()
-            re_code = (
-                torch.cat([kernel_code, Noise_level * 10], dim=1)
-                if self.noise
-                else kernel_code
-            )
-            lr_re = Variable(lr_noised_t).cuda()
-        else:
-            Noise_level = Variable(Noise_level)
-            re_code = (
-                torch.cat([kernel_code, Noise_level * 10], dim=1)
-                if self.noise
-                else kernel_code
-            )
-            lr_re = Variable(lr_noised_t)
+        Noise_level = Variable(Noise_level).cuda()
+        re_code = (
+            torch.cat([kernel_code, Noise_level * 10], dim=1)
+            if self.noise
+            else kernel_code
+        )
+        lr_re = Variable(lr_noised_t).to(device)
+
         return (lr_re, re_code, b_kernels) if kernel else (lr_re, re_code)
 
 
