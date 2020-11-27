@@ -1,22 +1,23 @@
-import os
-import math
 import argparse
-import random
 import logging
+import math
+import os
+import random
+import sys
+
 import numpy as np
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
-import options.options as option
-from models import create_model
 from IPython import embed
 
-import sys
+import options.options as option
+from models import create_model
 
 sys.path.insert(0, "../../")
+from data import create_dataloader, create_dataset
 from data.data_sampler import DistIterSampler
 from utils import util
-from data import create_dataloader, create_dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-opt", type=str, help="Path to option YMAL file of SFTMD_Net.")
@@ -32,7 +33,14 @@ opt = option.dict_to_nonedict(opt)
 
 
 batch_ker = util.random_batch_kernel(
-    batch=30000, l=21, sig_min=0.6, sig_max=5, rate_iso=0, scaling=3, tensor=False, random_disturb=True
+    batch=30000,
+    l=21,
+    sig_min=0.6,
+    sig_max=5,
+    rate_iso=0,
+    scaling=3,
+    tensor=False,
+    random_disturb=True,
 )
 print("batch kernel shape: {}".format(batch_ker.shape))
 b = np.size(batch_ker, 0)

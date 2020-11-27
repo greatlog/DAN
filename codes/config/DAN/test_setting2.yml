@@ -3,8 +3,6 @@ suffix: ~  # add suffix to saved images
 model: blind
 distortion: sr
 scale: 4 # 2
-kernel_size: 21 # 11 when scale=2
-code_length: 10
 crop_border: ~  # crop border when evaluation. If None(~), crop the scale pixels
 gpu_ids: [0]
 pca_matrix_path: ../../../pca_aniso_matrix_x4.pth # ../../../pca_aniso_matrix_2.pth when scale=2
@@ -14,7 +12,7 @@ datasets:
     name: DIV2KRK
     mode: LQGT
     dataroot_GT: /data/DIV2KRK_public/HRblur.lmdb
-    dataroot_LQ: /data/DIV2KRK_public/x2LRblur.lmdb
+    dataroot_LQ: /data/DIV2KRK_public/x4LRblur.lmdb
   # test1:
   #   name: Set5
   #   mode: LQGT
@@ -47,6 +45,7 @@ network_G:
   setting:
     nf: 64
     nb: 40
+    input_para: 10
     loop: 4
     upscale: 4
     kernel_size: 21

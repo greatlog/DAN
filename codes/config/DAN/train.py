@@ -1,22 +1,23 @@
-import os
-import math
 import argparse
-import random
 import logging
+import math
+import os
+import random
+import sys
+
 import numpy as np
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
-from models import create_model
-import options as option
 from IPython import embed
 
-import sys
+import options as option
+from models import create_model
 
 sys.path.insert(0, "../../")
-from data.data_sampler import DistIterSampler
-from utils import util
 from data import create_dataloader, create_dataset
+from data.data_sampler import DistIterSampler
+import utils as util
 
 
 def init_dist(backend="nccl", **kwargs):
@@ -216,21 +217,7 @@ def main():
         start_epoch = 0
 
     prepro = util.SRMDPreprocessing(
-        opt["scale"],
-        pca_matrix,
-        random=True,
-        para_input=opt["code_length"],
-        kernel=opt["kernel_size"],
-        noise=False,
-        cuda=True,
-        sig=None,
-        sig_min=opt["sig_min"],
-        sig_max=opt["sig_max"],
-        rate_iso=1.0,
-        scaling=3,
-        rate_cln=0.2,
-        noise_high=0.0,
-        random_disturb=opt["random_disturb"]
+        scale=opt["scale"], pca_matrix=pca_matrix, cuda=True, **opt["degradation"]
     )
     #### training
     logger.info(

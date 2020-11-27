@@ -1,17 +1,16 @@
+import os
 import random
-import numpy as np
+import sys
+
 import cv2
 import lmdb
+import numpy as np
 import torch
 import torch.utils.data as data
-import data.util as util
-import sys
-import os
 
 try:
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from data.util import imresize_np
-    from utils import util as utils
+    sys.path.append("..")
+    import data.util as util
 except ImportError:
     pass
 
@@ -126,7 +125,7 @@ class LQGTDataset(data.Dataset):
 
             H, W, _ = img_GT.shape
             # using matlab imresize
-            img_LR = util.imresize_np(img_GT, 1 / scale, True)
+            img_LR = util.imresize(img_GT, 1 / scale, True)
             if img_LR.ndim == 2:
                 img_LR = np.expand_dims(img_LR, axis=2)
 

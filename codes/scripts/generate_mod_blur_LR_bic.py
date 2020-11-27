@@ -5,30 +5,39 @@ import numpy as np
 import torch
 
 try:
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from data.util import imresize_np
-    from utils import util
+    sys.path.append('..')
+    from data.util import imresize
+    import utils as util
 except ImportError:
     pass
-
 
 def generate_mod_LR_bic():
     # set parameters
     up_scale = 4
     mod_scale = 4
     # set data dir
-    sourcedir = "/data/DIV2K_public/gt_k_x4"  #'/mnt/yjchai/SR_data/DIV2K_test_HR' #'/mnt/yjchai/SR_data/Flickr2K/Flickr2K_HR'
-    savedir = "/data/DIV2KRK_public/x4HRblur.lmdb"  #'/mnt/yjchai/SR_data/DIV2K_test' #'/mnt/yjchai/SR_data/Flickr2K_train'
-
-    # set random seed
-    util.set_random_seed(0)
+    sourcedir = "/data/Set5/source/"
+    savedir = "/data/Set5/"
 
     # load PCA matrix of enough kernel
     print("load PCA matrix")
     pca_matrix = torch.load(
-        "/data/IKC/pca_aniso_matrix.pth", map_location=lambda storage, loc: storage
+        "../../pca_matrix.pth", map_location=lambda storage, loc: storage
     )
     print("PCA matrix shape: {}".format(pca_matrix.shape))
+
+    degradation_setting = {
+        "random_kernel": False,
+        "code_length": 10,
+        "ksize": 21,
+        "pca_matrix": pca_matrix,
+        "scale": up_scale,
+        "cuda": True,
+        "rate_iso", 1.0
+    }
+
+    # set random seed
+    util.set_random_seed(0)
 
     saveHRpath = os.path.join(savedir, "HR", "x" + str(mod_scale))
     saveLRpath = os.path.join(savedir, "LR", "x" + str(up_scale))
@@ -77,6 +86,7 @@ def generate_mod_LR_bic():
     # kernel_map_tensor = torch.zeros((num_files, 1, 10)) # each kernel map: 1*10
 
     # prepare data with augementation
+    
     for i in range(num_files):
         filename = filepaths[i]
         print("No.{} -- Processing {}".format(i, filename))
@@ -93,33 +103,19 @@ def generate_mod_LR_bic():
         # LR_blur, by random gaussian kernel
         img_HR = util.img2tensor(image_HR)
         C, H, W = img_HR.size()
-        # sig_list = [1.8, 2.0, 2.2, 2.4, 2.6, 2.8, 3.0, 3.2]
-        # # sig = 2.6
+        
         for sig in np.linspace(1.8, 3.2, 8):
-            prepro = util.SRMDPreprocessing(
-                up_scale,
-                pca_matrix,
-                random=True,
-                para_input=10,
-                kernel=11,
-                noise=False,
-                cuda=True,
-                sig=0,
-                sig_min=0.6,
-                sig_max=5,
-                rate_iso=0,
-                scaling=3,
-                rate_cln=0.2,
-                noise_high=0.0,
-            )  # random(sig_min, sig_max) | stable kernel(sig)
+
+            prepro = util.SRMDPreprocessing(sig=sig, **degradation_setting)
+
             LR_img, ker_map = prepro(img_HR.view(1, C, H, W))
             image_LR_blur = util.tensor2img(LR_img)
             cv2.imwrite(os.path.join(saveLRblurpath, 'sig{}_{}'.format(sig,filename)), image_LR_blur)
             cv2.imwrite(os.path.join(saveHRpath, 'sig{}_{}'.format(sig,filename)), image_HR)
         # LR
-        image_LR = imresize_np(image_HR, 1 / up_scale, True)
+        image_LR = imresize(image_HR, 1 / up_scale, True)
         # bic
-        image_Bic = imresize_np(image_LR, up_scale, True)
+        image_Bic = imresize(image_LR, up_scale, True)
 
         # cv2.imwrite(os.path.join(saveHRpath, filename), image_HR)
         cv2.imwrite(os.path.join(saveLRpath, filename), image_LR)

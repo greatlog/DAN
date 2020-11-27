@@ -1,10 +1,12 @@
-import os
 import math
+import os
 import pickle
 import random
+
+import cv2
 import numpy as np
 import torch
-import cv2
+
 # Files & IO
 
 IMG_EXTENSIONS = ['.jpg', '.JPG', '.jpeg', '.JPEG', '.png', '.PNG', '.ppm', '.PPM', '.bmp', '.BMP']
@@ -255,6 +257,7 @@ def calculate_weights_indices(in_length, out_length, scale, kernel, kernel_width
     # Input-space coordinates. Calculate the inverse mapping such that 0.5
     # in output space maps to 0.5 in input space, and 0.5+scale in output
     # space maps to 1.5 in input space.
+    u = x / scale + 0.5 * (1 - 1 / scale)
     
     # What is the left-most pixel that can be involved in the computation?
     left = torch.floor(u - kernel_width / 2)
@@ -301,12 +304,16 @@ def imresize(img, scale, antialiasing=True):
     # Now the scale should be the same for H and W
     # input: img: CHW RGB [0,1]
     # output: CHW RGB [0,1] w/o round
+    is_numpy = False
     if isinstance(img, np.ndarray):
-        img = torch.from_numpy(img)
+        img = torch.from_numpy(img.transpose(2, 0, 1))
         is_numpy = True
     device = img.device
+
+    is_batch = True
     if len(img.shape) == 3: # C, H, W
         img = img[None]
+        is_batch = False
 
     B, in_C, in_H, in_W = img.size()
     img = img.view(-1, in_H, in_W)
@@ -371,7 +378,9 @@ def imresize(img, scale, antialiasing=True):
             weights_W[i][None,:,None].repeat(B*in_C, 1, 1))).squeeze()
 
     out_2 = out_2.contiguous().view(B, in_C, out_H, out_W)
-    return out_2.cpu().numpy() if is_numpy else out_2
+    if not is_batch:
+        out_2 = out_2[0]
+    return out_2.cpu().numpy().transpose(1, 2, 0) if is_numpy else out_2
 
     ### Load data kernel map ###
 def load_ker_map_list(path):

@@ -5,7 +5,7 @@ import numpy as np
 
 try:
     sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from data.util import imresize_np
+    from data.util import imresize
 except ImportError:
     pass
 
@@ -68,9 +68,9 @@ def generate_mod_LR_bic():
         else:
             image_HR = image[0 : mod_scale * height, 0 : mod_scale * width]
         # LR
-        image_LR = imresize_np(image_HR, 1 / up_scale, True)
+        image_LR = imresize(image_HR, 1 / up_scale, True)
         # bic
-        image_Bic = imresize_np(image_LR, up_scale, True)
+        image_Bic = imresize(image_LR, up_scale, True)
 
         cv2.imwrite(os.path.join(saveHRpath, filename), image_HR)
         cv2.imwrite(os.path.join(saveLRpath, filename), image_LR)

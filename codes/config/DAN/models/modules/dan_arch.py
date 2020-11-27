@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from utils.util import PCAEncoder
+from utils import PCAEncoder
 
 
 class CALayer(nn.Module):

@@ -5,13 +5,16 @@ model: blind
 distortion: sr
 scale: 4
 gpu_ids: [0, 1, 2, 3, 4, 5, 6, 7]
-kernel_size: 21 # 11 when scale=2
-code_length: 10
-sig_min: 0.2
-sig_max: 4.0
-sig: 2.6
-random_disturb: true
 pca_matrix_path: ../../../pca_aniso_matrix_x4.pth # ../../../pca_aniso_matrix_x2.pth when scale=2
+
+degradation:
+  random_kernel: True
+  ksize: 21 # 11 when scale=2
+  code_length: 10
+  sig_min: 0.6
+  sig_max: 5
+  rate_iso: 0
+  random_disturb: true
 
 #### datasets
 datasets:
@@ -40,6 +43,7 @@ network_G:
   setting:
     nf: 64
     nb: 40
+    input_para: 10
     loop: 4
     upscale: 4
     kernel_size: 21

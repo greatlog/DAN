@@ -1,25 +1,24 @@
+import argparse
+import logging
 import os
-import sys
-import cv2
-
 import os.path as osp
-from tqdm import tqdm
+import sys
+import time
+from collections import OrderedDict
 from glob import glob
 
-import logging
-import time
-import argparse
-from collections import OrderedDict
+import cv2
 import numpy as np
 import torch
+from tqdm import tqdm
+
 import options as option
 from models import create_model
 
-
 sys.path.insert(0, "../../")
 import utils.util as util
+from data import create_dataloader, create_dataset
 from data.util import bgr2ycbcr
-from data import create_dataset, create_dataloader
 
 #### options
 parser = argparse.ArgumentParser()

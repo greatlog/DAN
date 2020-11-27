@@ -1,11 +1,15 @@
+import logging
 import os
 import os.path as osp
-import logging
-import yaml
 import sys
 
-sys.path.insert(0, "../../")
-from utils.util import OrderedYaml
+import yaml
+
+try:
+    sys.path.append("../../")
+    from utils import OrderedYaml
+except ImportError:
+    pass
 
 Loader, Dumper = OrderedYaml()
 

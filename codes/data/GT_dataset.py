@@ -1,17 +1,16 @@
+import os
 import random
-import numpy as np
+import sys
+
 import cv2
 import lmdb
+import numpy as np
 import torch
 import torch.utils.data as data
-import data.util as util
-import sys
-import os
 
 try:
-    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from data.util import imresize_np
-    from utils import util as utils
+    sys.path.append("..")
+    import data.util as util
 except ImportError:
     pass
 
@@ -41,7 +40,7 @@ class GTDataset(data.Dataset):
         else:
             print("Error: data_type is not matched in Dataset")
         assert self.GT_paths, "Error: GT paths are empty."
-     
+
         self.random_scale_list = [1]
 
     def _init_lmdb(self):
@@ -56,7 +55,7 @@ class GTDataset(data.Dataset):
 
     def __getitem__(self, index):
         if self.opt["data_type"] == "lmdb":
-            if (self.GT_env is None):
+            if self.GT_env is None:
                 self._init_lmdb()
 
         GT_path = None
@@ -82,9 +81,7 @@ class GTDataset(data.Dataset):
 
             rnd_h = random.randint(0, max(0, H - GT_size))
             rnd_w = random.randint(0, max(0, W - GT_size))
-            img_GT = img_GT[
-                rnd_h : rnd_h + GT_size, rnd_w : rnd_w + GT_size, :
-            ]
+            img_GT = img_GT[rnd_h : rnd_h + GT_size, rnd_w : rnd_w + GT_size, :]
 
             # augmentation - flip, rotate
             img_GT = util.augment(
@@ -96,9 +93,9 @@ class GTDataset(data.Dataset):
 
         # change color space if necessary
         if self.opt["color"]:
-            img_GT = util.channel_convert(
-                img_GT.shape[2], self.opt["color"], [img_GT]
-                )[0]
+            img_GT = util.channel_convert(img_GT.shape[2], self.opt["color"], [img_GT])[
+                0
+            ]
 
         # BGR to RGB, HWC to CHW, numpy to tensor
         if img_GT.shape[2] == 3:

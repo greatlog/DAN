@@ -1,19 +1,21 @@
-import os.path
-import logging
-import time
 import argparse
+import logging
+import os.path
+import sys
+import time
 from collections import OrderedDict
+
 import numpy as np
 import torch
-import options as option
-from models import create_model
-import sys
 from IPython import embed
 
+import options as option
+from models import create_model
+
 sys.path.insert(0, "../../")
-import utils.util as util
+import utils as util
+from data import create_dataloader, create_dataset
 from data.util import bgr2ycbcr
-from data import create_dataset, create_dataloader
 
 #### options
 parser = argparse.ArgumentParser()
