@@ -13,7 +13,6 @@ degradation:
   code_length: 10
   sig_min: 0.2
   sig_max: 4.0
-  sig: 2.6
   rate_iso: 1.0
   random_disturb: false
 

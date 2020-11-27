@@ -64,7 +64,7 @@ def random_batch_kernel(
     random_disturb=False,
 ):
 
-    if np.random.random() < rate_iso:
+    if rate_iso == 1:
 
         sigma = np.random.uniform(sig_min, sig_max, (batch, 1, 1))
         ax = np.arange(-l // 2 + 1.0, l // 2 + 1.0)
@@ -76,7 +76,7 @@ def random_batch_kernel(
         return torch.FloatTensor(kernel) if tensor else kernel
 
     else:
-
+        
         sigma_x = np.random.uniform(sig_min, sig_max, (batch, 1, 1))
         sigma_y = np.random.uniform(sig_min, sig_max, (batch, 1, 1))
 
@@ -85,6 +85,10 @@ def random_batch_kernel(
         D[:, 1, 1] = sigma_y.squeeze() ** 2
 
         radians = np.random.uniform(-np.pi, np.pi, (batch))
+        mask_iso = np.random.uniform(0, 1, (batch)) < rate_iso]
+        radians[mask_iso] = 0
+        sigma_y[mask_iso] = sigma_x[mask_iso]
+        
         U = np.zeros((batch, 2, 2))
         U[:, 0, 0] = np.cos(radians)
         U[:, 0, 1] = -np.sin(radians)
