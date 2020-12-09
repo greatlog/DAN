@@ -85,7 +85,7 @@ def random_batch_kernel(
         D[:, 1, 1] = sigma_y.squeeze() ** 2
 
         radians = np.random.uniform(-np.pi, np.pi, (batch))
-        mask_iso = np.random.uniform(0, 1, (batch)) < rate_iso]
+        mask_iso = np.random.uniform(0, 1, (batch)) < rate_iso
         radians[mask_iso] = 0
         sigma_y[mask_iso] = sigma_x[mask_iso]
         
@@ -153,6 +153,16 @@ def b_GaussianNoising(tensor, sigma, mean=0.0, noise_size=None, min=0.0, max=1.0
     ).to(tensor.device)
     return torch.clamp(noise + tensor, min=min, max=max)
 
+def b_GaussianNoising(tensor, noise_high, mean=0.0, noise_size=None, min=0.0, max=1.0):
+    if noise_size is None:
+        size = tensor.size()
+    else:
+        size = noise_size
+    noise = torch.FloatTensor(
+        np.random.normal(loc=mean, scale=noise_high, size=size)
+        ).to(tensor.device)
+    return torch.clamp(noise + tensor, min=min, max=max)
+
 
 class BatchSRKernel(object):
     def __init__(
@@ -195,7 +205,7 @@ class BatchBlurKernel(object):
     def __call__(self, random, batch, tensor=False):
         index = np.random.randint(0, self.num_kernels, batch)
         kernels = self.kernels[index]
-        return torch.FloatTensor(kernels) if tensor else kernels
+        return torch.FloatTensor(kernels).contiguous() if tensor else kernels
 
 
 class PCAEncoder(nn.Module):
@@ -215,14 +225,14 @@ class BatchBlur(object):
     def __init__(self, l=15):
         self.l = l
         if l % 2 == 1:
-            self.pad = nn.ReflectionPad2d(l // 2)
+            self.pad =(l // 2, l // 2, l // 2, l // 2)
         else:
-            self.pad = nn.ReflectionPad2d((l // 2, l // 2 - 1, l // 2, l // 2 - 1))
+            self.pad = (l // 2, l // 2 - 1, l // 2, l // 2 - 1)
         # self.pad = nn.ZeroPad2d(l // 2)
 
     def __call__(self, input, kernel):
         B, C, H, W = input.size()
-        pad = self.pad(input)
+        pad = F.pad(input, self.pad, mode='reflect')
         H_p, W_p = pad.size()[-2:]
 
         if len(kernel.size()) == 2:
@@ -242,31 +252,23 @@ class BatchBlur(object):
 
 class SRMDPreprocessing(object):
     def __init__(
-        self,
-        scale,
-        pca_matrix,
-        random_kernel,
-        code_length=10,
-        ksize=21,
-        noise=False,
-        cuda=False,
-        sig=0,
-        sig_min=0,
-        sig_max=0,
-        rate_iso=1.0,
-        rate_cln=1,
-        noise_high=0,
-        random_disturb=False,
+        self, scale, pca_matrix,
+        ksize=21, code_length=10,
+        random_kernel = True, noise=False, cuda=False, random_disturb=False,
+        sig=0, sig_min=0, sig_max=0, rate_iso=1.0, rate_cln=1, noise_high=0,
+        stored_kernel=False, pre_kernel_path = None
     ):
         self.encoder = PCAEncoder(pca_matrix).cuda() if cuda else PCAEncoder(pca)
-        self.kernel_gen = BatchSRKernel(
-            l=ksize,
-            sig=sig,
-            sig_min=sig_min,
-            sig_max=sig_max,
-            rate_iso=rate_iso,
-            random_disturb=random_disturb,
+
+        self.kernel_gen = (
+            BatchSRKernel(
+                l=ksize,
+                sig=sig, sig_min=sig_min, sig_max=sig_max,
+                rate_iso=rate_iso, random_disturb=random_disturb,
+            ) if not stored_kernel else 
+            BatchBlurKernel(pre_kernel_path)
         )
+
         self.blur = BatchBlur(l=ksize)
         self.para_in = code_length
         self.l = ksize
@@ -291,14 +293,17 @@ class SRMDPreprocessing(object):
         kernel_code = self.encoder(b_kernels)
 
         # Down sample
-        lr_blured_t = b_Bicubic(hr_blured_var, self.scale)
+        if self.scale != 1:
+            lr_blured_t = b_Bicubic(hr_blured_var, self.scale)
+        else:
+            lr_blured_t = hr_blured_var
 
         # Noisy
         if self.noise:
             Noise_level = torch.FloatTensor(
                 random_batch_noise(B, self.noise_high, self.rate_cln)
             )
-            lr_noised_t = b_GaussianNoising(lr_blured_t, Noise_level)
+            lr_noised_t = b_GaussianNoising(lr_blured_t, self.noise_high)
         else:
             Noise_level = torch.zeros((B, 1))
             lr_noised_t = lr_blured_t

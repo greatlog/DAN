@@ -1,12 +1,13 @@
 __pycache__/
 
-experiments/
+experiments/*
 !experiments
 
-checkpoints/
+checkpoints/DANx2.pth
+checkpoints/DANx4.pth
 !checkpoints
 
-data_samples/
+data_samples/*
 !data_samples
 
 codes/config/
@@ -15,13 +16,17 @@ codes/config/
 results/
 !results
 
+log/
+result/
+
+codes/utils/util.py
 codes/scripts/make_blur_kernel.m
 codes/scripts/make_kernels.m
 
-.pth
-.png
-.log
-.pkl
-.json
-.jpg
-.state
+*.pth
+*.png
+*.log
+*.pkl
+*.json
+*.jpg
+*.state

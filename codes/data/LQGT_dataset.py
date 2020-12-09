@@ -152,6 +152,7 @@ class LQGTDataset(data.Dataset):
 
         # change color space if necessary
         if self.opt["color"]:
+            H, W, C = img_LR.shape
             img_LR = util.channel_convert(C, self.opt["color"], [img_LR])[
                 0
             ]  # TODO during val no definition

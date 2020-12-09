@@ -16,7 +16,7 @@ import options as option
 from models import create_model
 
 sys.path.insert(0, "../../")
-import utils.util as util
+import utils as util
 from data import create_dataloader, create_dataset
 from data.util import bgr2ycbcr
 

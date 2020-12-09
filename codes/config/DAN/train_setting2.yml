@@ -52,9 +52,9 @@ network_G:
 #### path
 path:
   pretrain_model_G: ~
-  strict_load: true
+  strict_load: 
   resume_state: ~
-
+  
 #### training settings: learning rate scheme, loss
 train:
   lr_G: !!float 4e-4

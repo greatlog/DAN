@@ -8,16 +8,16 @@ import cv2
 
 try:
     sys.path.append(osp.dirname(osp.dirname(osp.abspath(__file__))))
-    from utils.util import ProgressBar
+    from utils import ProgressBar
 except ImportError:
     pass
 
 # configurations
 # img_folder = '/data/DIV2K/DIV2K_train/LR/x4/*'  # glob matching pattern
-img_folder = "/data/DIV2KRK_public/lr_x2/*"
+img_folder = "/data/rolf48/blurry/*"
 # lmdb_save_path = '/data/DIV2K/DIV2K_train_LR_sub.lmdb'
-lmdb_save_path = "/data/DIV2KRK_public/x2LRblur.lmdb"
-meta_info = {"name": "DIV2KRK_x4HRblur"}
+lmdb_save_path = "/data/rolf48/blurry.lmdb"
+meta_info = {"name": "rolf48"}
 
 mode = (
     2  # 1 for reading all the images to memory and then writing to lmdb (more memory);

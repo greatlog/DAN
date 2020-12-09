@@ -120,7 +120,7 @@ def main():
             opt["path"]["log"],
             "train_" + opt["name"],
             level=logging.INFO,
-            screen=True,
+            screen=False,
             tofile=True,
         )
         util.setup_logger(
@@ -128,7 +128,7 @@ def main():
             opt["path"]["log"],
             "val_" + opt["name"],
             level=logging.INFO,
-            screen=True,
+            screen=False,
             tofile=True,
         )
         logger = logging.getLogger("base")
@@ -148,7 +148,7 @@ def main():
             tb_logger = SummaryWriter(log_dir="log/{}/tb_logger/".format(opt["name"]))
     else:
         util.setup_logger(
-            "base", opt["path"]["log"], "train", level=logging.INFO, screen=True
+            "base", opt["path"]["log"], "train", level=logging.INFO, screen=False
         )
         logger = logging.getLogger("base")
 
