@@ -58,5 +58,5 @@ python3 test.py -opt=test_setting1.yml
 ## Test on Real Images
 ```bash
 cd codes/config/DAN
-python3 test_single_image.py -opt=test_option.yml -input_dir=/path/to/real/images/ -output_dir=/path/to/save/sr/results/
+python3 test_single_img.py -opt=test_option.yml -input_dir=/path/to/real/images/ -output_dir=/path/to/save/sr/results/
 ```
