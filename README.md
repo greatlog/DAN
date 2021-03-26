@@ -14,8 +14,8 @@ If this repo works for you, please cite our paper:
 This repo is build on the basis of [[MMSR]](https://github.com/open-mmlab/mmsr) and [[IKC]](https://github.com/yuanjunchai/IKC)
 
 ## News
-[x] Add more pretrained weights and update the results of DANv1!
-[x] Add pretrained weights and update the results of about [[IKC]](https://github.com/yuanjunchai/IKC)!
+[x] Add more pretrained weights and update the results of DANv1 \!
+[x] Add pretrained weights and update the results of about [[IKC]](https://github.com/yuanjunchai/IKC)\!
 []  Add DANv2
 
 ## Main Results
