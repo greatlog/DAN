@@ -18,7 +18,7 @@ This repo is build on the basis of [[MMSR]](https://github.com/open-mmlab/mmsr) 
 
 - [x] Add pretrained weights and update the results of about [[IKC]](https://github.com/yuanjunchai/IKC)\!
 
-- []  Add DANv2
+- [ ] Add DANv2
 
 ## Main Results
 
