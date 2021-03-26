@@ -89,24 +89,24 @@ python3 codes/scripts/create_lmdb.py
 For single GPU:
 ```bash
 cd codes/config/DANv1
-python3 train.py -opt=train_setting1.yml
+python3 train.py -opt=options/setting1/train_setting1_x4.yml
 ```
 
 For distributed training
 ```bash
 cd codes/config/DANv1
-bash run_scripts.sh
+python3 -m torch.distributed.launch --nproc_per_node=8 --master_poer=4321 train.py -opt=options/setting1/train_setting1_x4.yml --launcher pytorch
 ```
 
 
 ## Test on Synthetic Images
 ```bash
 cd codes/config/DANv1
-python3 test.py -opt=test_setting1.yml
+python3 test.py -opt=options/setting1/test_setting1_x4.yml
 ```
 
 ## Test on Real Images
 ```bash
 cd codes/config/DANv1
-python3 test_single_img.py -opt=test_option.yml -input_dir=/path/to/real/images/ -output_dir=/path/to/save/sr/results/
+python3 inference.py -input_dir=/path/to/real/images/ -output_dir=/path/to/save/sr/results/
 ```
