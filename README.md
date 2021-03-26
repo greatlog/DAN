@@ -14,11 +14,11 @@ If this repo works for you, please cite our paper:
 This repo is build on the basis of [[MMSR]](https://github.com/open-mmlab/mmsr) and [[IKC]](https://github.com/yuanjunchai/IKC)
 
 ## News
-[x] Add more pretrained weights and update the results of DANv1 \!
+- [x] Add more pretrained weights and update the results of DANv1 \!
 
-[x] Add pretrained weights and update the results of about [[IKC]](https://github.com/yuanjunchai/IKC)\!
+- [x] Add pretrained weights and update the results of about [[IKC]](https://github.com/yuanjunchai/IKC)\!
 
-[]  Add DANv2
+- []  Add DANv2
 
 ## Main Results
 
@@ -60,9 +60,6 @@ Pretrained weights of DANv1 and IKC are available at [BaiduYun](https://pan.baid
     `--IKC
         |-- ... 
 ```
-
-The pretrained models and visual results on DIV2KRK are available at [BaiduYun](https://pan.baidu.com/s/1KOnoIplZmF9XheARW_tM-w)(Password: u9ah) [GoogleDrive](https://drive.google.com/drive/folders/1wdlVOcM8faEoTUZhFFsRVKVPiaZjfBf5?usp=sharing)
-
 
 ## Dataset Preparation
 We use [DIV2K](https://data.vision.ee.ethz.ch/cvl/DIV2K/) and [Flickr2K](http://cv.snu.ac.kr/research/EDSR/Flickr2K.tar) as our training datasets. 
