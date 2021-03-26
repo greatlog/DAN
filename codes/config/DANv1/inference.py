@@ -28,8 +28,8 @@ parser.add_argument(
     default="options/setting1/test/test_setting1_x4.yml",
     help="Path to options YMAL file.",
 )
-parser.add_argument("-input_dir", type=str, default="../../../data_samples/")
-parser.add_argument("-output_dir", type=str, default="../../../data_samples/")
+parser.add_argument("-input_dir", type=str, default="../../../data_samples/LR")
+parser.add_argument("-output_dir", type=str, default="../../../data_samples/DANv1_SR")
 args = parser.parse_args()
 opt = option.parse(args.opt, is_train=False)
 
@@ -54,5 +54,5 @@ for inx, path in tqdm(enumerate(test_files)):
     sr = model.fake_SR.detach().float().cpu()[0]
     sr_im = util.tensor2img(sr)
 
-    save_path = osp.join(args.output_dir, "{}_dan_x{}.png".format(name, opt["scale"]))
+    save_path = osp.join(args.output_dir, "{}_x{}.png".format(name, opt["scale"]))
     cv2.imwrite(save_path, sr_im)

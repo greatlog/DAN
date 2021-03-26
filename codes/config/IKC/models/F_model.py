@@ -122,9 +122,12 @@ class F_Model(BaseModel):
                 init.constant_(layer.weight, 1)
                 init.constant_(layer.bias.data, 0.0)
 
-    def feed_data(self, data, LR_img, ker_map):
+    def feed_data(self, data=None, LR_img=None, ker_map=None):
         # self.var_L = data['LQ'].to(self.device)  # LQ
-        self.real_H = data["GT"].to(self.device)  # GT
+        if data is None:
+            self.real_H = None
+        else:
+            self.real_H = data["GT"].to(self.device)  # GT
         self.var_L, self.ker = LR_img.to(self.device), ker_map.to(self.device)
         # self.real_ker = data['real_ker'].to(self.device)  # real kernel map
         # self.ker = data['ker'].to(self.device) # [Batch, 1, k]
@@ -190,7 +193,7 @@ class F_Model(BaseModel):
         out_dict = OrderedDict()
         out_dict["LQ"] = self.var_L.detach()[0].float().cpu()
         out_dict["SR"] = self.fake_SR.detach()[0].float().cpu()
-        out_dict["GT"] = self.real_H.detach()[0].float().cpu()
+        out_dict["GT"] = None if self.real_H is None else self.real_H.detach()[0].float().cpu()
         out_dict["ker"] = self.ker.detach()[0].float().cpu()
         out_dict["Batch_SR"] = (
             self.fake_SR.detach().float().cpu()
