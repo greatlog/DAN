@@ -1,0 +1,54 @@
+name: SFTMDx4
+suffix: ~  # add suffix to saved images
+model: sftmd
+distortion: sr
+scale: 4
+step: 7
+crop_border: ~  # crop border when evaluation. If None(~), crop the scale pixels
+gpu_ids: [0]
+kernel_size: 21
+code_length: 10
+sig_min: 0.2
+sig_max: 4.0
+sig: 2.6
+
+datasets:
+    test1:
+      name: Set5
+      mode: LQGTker
+      dataroot_GT: /data/Set5/x4HRblur.lmdb
+      dataroot_LQ: /data/Set5/x4LRblur.lmdb
+    test2:
+      name: Set14
+      mode: LQGTker
+      dataroot_GT: /data/Set14/x4HRblur.lmdb
+      dataroot_LQ: /data/Set14/x4LRblur.lmdb
+    test3:
+      name: BSDS100
+      mode: LQGTker
+      dataroot_GT: /data/BSDS100/x4HRblur.lmdb
+      dataroot_LQ: /data/BSDS100/x4LRblur.lmdb
+    test4:
+      name: urban100
+      mode: LQGTker
+      dataroot_GT: /data/urban100/x4HRblur.lmdb
+      dataroot_LQ: /data/urban100/x4LRblur.lmdb
+    test5:
+      name: manga109
+      mode: LQGTker
+      dataroot_GT: /data/manga109/x4HRblur.lmdb
+      dataroot_LQ: /data/manga109/x4LRblur.lmdb
+
+#### network structures
+network_G:
+  which_model_G: SFTMD
+  in_nc: 3
+  out_nc: 3
+  nf: 64
+  nb: 16
+  upscale: 4
+  code_length: 10
+
+#### path
+path:
+  pretrain_model_G: ../../../checkpoints/IKC/x4/SFTMD_latest_G.pth

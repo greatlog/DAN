@@ -1,0 +1,75 @@
+#### general settings
+name: Predictor_x4
+use_tb_logger: true
+model: predictor
+distortion: sr
+scale: 4
+gpu_ids: [6, 7]
+step: 7
+kernel_size: 21
+code_length: 10
+sig_min: 0.2
+sig_max: 4.0
+sig: 2.6
+
+#### datasets
+datasets:
+  train:
+    name: DIV2K
+    mode: LQGTker
+    dataroot_GT: /data/DIV2K_Flickr2K/x4HR.lmdb
+    dataroot_LQ: /data/DIV2K_Flickr2K/x4LR.lmdb
+
+    use_shuffle: true
+    n_workers: 8  # per GPU
+    batch_size: 32
+    GT_size: 256
+    LR_size: 64
+    use_flip: true
+    use_rot: true
+    color: RGB
+  val:
+    name: Set5
+    mode: LQGTker
+    dataroot_GT: /data/Set5/Set5_HR.lmdb
+    dataroot_LQ: /data/Set5/Set5_LR.lmdb
+
+#### network structures
+network_G:
+  which_model_G: Predictor
+  in_nc: 3
+  out_nc: 3
+  nf: 64
+  nb: 16
+  upscale: 4
+  code_length: 10
+
+#### path
+path:
+  pretrain_model_G: ~
+  strict_load: true
+  resume_state: ~
+
+#### training settings: learning rate scheme, loss
+train:
+  lr_G: !!float 1e-4
+  lr_scheme: ~
+  beta1: 0.9
+  beta2: 0.99
+  niter: 5000
+  warmup_iter: -1  # no warm up
+  T_period: ~ #[250000, 250000, 250000, 250000]
+  restarts: ~ #[250000, 500000, 750000]
+  restart_weights: ~ #[1, 1, 1]
+  eta_min: !!float 1e-7
+
+  pixel_criterion: l2
+  pixel_weight: 1.0
+
+  manual_seed: 0
+  val_freq: 500 #!!float 5e3
+
+#### logger
+logger:
+  print_freq: 10
+  save_checkpoint_freq: 500
