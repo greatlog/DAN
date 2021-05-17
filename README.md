@@ -1,6 +1,6 @@
 This is an official implementation of [Unfolding the Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2010.02631) and [End-to-end Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2105.06878)
 
-If this repo works for you, please cite our paper:
+If this repo works for you, please cite our papers:
 ```
 @article{luo2020unfolding,
   title={Unfolding the Alternating Optimization for Blind Super Resolution},
