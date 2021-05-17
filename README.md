@@ -1,4 +1,4 @@
-This is an official implementation of [Unfolding the Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2010.02631)
+This is an official implementation of [Unfolding the Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2010.02631) and [End-to-end Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2105.06878)
 
 If this repo works for you, please cite our paper:
 ```
@@ -9,6 +9,14 @@ If this repo works for you, please cite our paper:
   volume={33},
   year={2020}
 }
+@misc{luo2021endtoend,
+      title={End-to-end Alternating Optimization for Blind Super Resolution}, 
+      author={Zhengxiong Luo and Yan Huang and Shang Li and Liang Wang and Tieniu Tan},
+      year={2021},
+      eprint={2105.06878},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
 ```
 
 This repo is build on the basis of [[MMSR]](https://github.com/open-mmlab/mmsr) and [[IKC]](https://github.com/yuanjunchai/IKC)
@@ -18,7 +26,7 @@ This repo is build on the basis of [[MMSR]](https://github.com/open-mmlab/mmsr) 
 
 - [x] Add pretrained weights and update the results of about [[IKC]](https://github.com/yuanjunchai/IKC)\!
 
-- [x] Add DANv2
+- [x] Add DANv2 \!\!\!
 
 ## Main Results
 
