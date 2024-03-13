@@ -1,4 +1,4 @@
-Our new work about blind image super-resolution is released. The paper is released at [RealDAN](https://arxiv.org/abs/2308.08816). The codes are available at [RealDAN](https://github.com/greatlog/RealDAN).
+Our new work about blind image super-resolution has been accepted to IJCV. The paper is available at [End-to-end Alternating Optimization for Real-World Blind Super Resolution](https://arxiv.org/abs/2308.08816). The codes are released at [RealDAN](https://github.com/greatlog/RealDAN).
 
 This is an official implementation of [Unfolding the Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2010.02631) and [End-to-end Alternating Optimization for Blind Super Resolution](https://arxiv.org/abs/2105.06878)
 
